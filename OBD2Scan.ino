@@ -27,7 +27,7 @@ void canSetupSpeed(CAN_COMMON *bus, uint32_t defaultSpeed)
   }
   else
   {
-    bus->begin(defaultSpeed, 255);
+    bus->begin(defaultSpeed);
     SerialUSB.print("Auto speed detect failed. Using ");
     SerialUSB.println(defaultSpeed);
   }  
@@ -111,6 +111,7 @@ void queryECU(uint32_t id, IsoTp *iso)
     {
       uint32_t bits = RxMsg.Buffer[2] + (RxMsg.Buffer[3] * 256) + (RxMsg.Buffer[4] * 65536ul) + (RxMsg.Buffer[5] * 256ul * 65536ul);
       displayBitfield(bits);
+      SerialUSB.println();
     }
     else
     {
@@ -134,8 +135,15 @@ void setup()
   SerialUSB.print("CAN1:");
   canSetupSpeed(&Can1, 250000);
   
-  Can0.watchFor(); //allow all traffic through
-  Can1.watchFor();
+  for (int filter = 0; filter < 3; filter++) {
+      Can0.setRXFilter(filter, 0, 0, true);
+      Can1.setRXFilter(filter, 0, 0, true);
+  }  
+  //standard
+  for (int filter = 3; filter < 7; filter++) {
+      Can0.setRXFilter(filter, 0, 0, false);
+      Can1.setRXFilter(filter, 0, 0, false);
+   }  
 
   TxMsg.Buffer=(uint8_t *)calloc(MAX_MSGBUF,sizeof(uint8_t));
   RxMsg.Buffer=(uint8_t *)calloc(MAX_MSGBUF,sizeof(uint8_t));

@@ -43,6 +43,7 @@ void displayBitfield(uint32_t bits)
       if (bits & (1ul << ((i*8) + j))) SerialUSB.write('1');
       else SerialUSB.write('0');
     }
+    SerialUSB.write(' ');
   }
 }
 
@@ -102,9 +103,9 @@ void queryECU(uint32_t id, IsoTp *iso)
     TxMsg.Buffer[1] = PID_SUPPORTED1 + (j * 0x20);
     iso->send(&TxMsg);
     SerialUSB.print("Supported PIDs ");
-    SerialUSB.print(j * 32);
+    SerialUSB.print(j * 32 + 1);
     SerialUSB.print("-");
-    SerialUSB.print((j * 32) + 31);
+    SerialUSB.print((j * 32) + 32);
     SerialUSB.print(": ");
     iso->receive(&RxMsg);
     if (RxMsg.tp_state == ISOTP_FINISHED)

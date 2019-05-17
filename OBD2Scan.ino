@@ -27,10 +27,12 @@ void canSetupSpeed(CAN_COMMON *bus, uint32_t defaultSpeed)
   }
   else
   {
-    bus->begin(defaultSpeed);
+    bus->enable();
+    bus->begin(defaultSpeed, 255);
     SerialUSB.print("Auto speed detect failed. Using ");
     SerialUSB.println(defaultSpeed);
-  }  
+  }
+  bus->setListenOnlyMode(false); //important! autobaud enables listen only
   SerialUSB.println();
 }
 
@@ -174,4 +176,3 @@ void setup()
 void loop()
 { 
 }
-
